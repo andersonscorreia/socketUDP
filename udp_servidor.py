@@ -1,5 +1,6 @@
 # Importando a biblioteca socket e sys
 import sys, socket, os
+from datetime import datetime
  
 # Definindo as constantes do programa
 HOST        = ''            # Definindo o IP do servidor
@@ -24,7 +25,7 @@ for i in listArquivos:
 arquivosTamanho =''
 for i,j in dictArquivos.items():
     arquivosTamanho = arquivosTamanho+i+' --- '+str(j)+'\n'
-
+mensagensLog = []
 try:
     while True:
         # Recebendo os dados do cliente
@@ -32,6 +33,9 @@ try:
         # Convertendo a mensagem recebida de bytes para string
         mensagem = mensagem.decode(CODE_PAGE)
         # Imprimindo a mensagem recebida 
+        
+        mensagensLog.append([datetime.today().strftime('%Y-%m-%d %H:%M'),ip_cliente[0], mensagem,]) 
+        
         if mensagem.upper() == '\\H': 
             print(f'\nMandando Ajuda Para {ip_cliente} ...\n')
             mensagem_volta = '\n --Listas de Comando-- \n \\f -- Listar Arquivos \n \\d:nome_arquivo -- Efetua o Download do Arquivo \n \\u:nome_arquivo -- Efetua o Upload do Arquivo \n \\q -- Sair do Cliente \n'                
@@ -41,6 +45,14 @@ try:
         elif mensagem.upper() == '\\Q':
             print(f'\nO {ip_cliente} SE DESCONECTOU DO SERVIDOR...\n')
         
+        elif mensagem.upper() == '\\M':            
+            print(f'\nO {ip_cliente} Enviando Lista de Mensagens...\n')
+            mensagem_volta = '\n'
+            for i in mensagensLog:
+                mensagem_volta = mensagem_volta+i[0]+', '+i[1]+', '+i[2]+'\n'
+                        
+            udp_socket.sendto(mensagem_volta.encode(CODE_PAGE), ip_cliente)
+            
         # Mandando lista de Arquivos  
         elif mensagem.upper() == '\\F':
             print(f'\nMandando Lista De Arquivos Para {ip_cliente} ...\n')

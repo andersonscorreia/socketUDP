@@ -1,6 +1,7 @@
 import os
+from datetime import datetime
 from tkinter.messagebox import YES
-
+'''
 def caminho(pasta):
     caminho = os.path.dirname(os.path.abspath(__file__))
     caminho += '\\'+pasta
@@ -23,7 +24,7 @@ else:
 
 
 
-'''
+
 def listFiles():
     arquivos = os.listdir(caminho('server_files'))
     return(arquivos)
@@ -34,3 +35,5 @@ def listTamanho(NomeArquivos):
 
 listTamanho(listFiles)
 '''
+
+print(datetime.today().strftime('%Y-%m-%d %H:%M'))
