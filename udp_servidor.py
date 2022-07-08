@@ -13,7 +13,8 @@ udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
  
 # Vincular o socket a tupla (host, port)
 udp_socket.bind((HOST, PORT)) 
- 
+#Lista para Armazenar Mensagens 
+mensagensLog = []
 print(f'\nSERVIDOR ATIVO: {udp_socket.getsockname()}')
 print('\nRecebendo Mensagens...\n\n')
 
@@ -25,17 +26,18 @@ for i in listArquivos:
 arquivosTamanho =''
 for i,j in dictArquivos.items():
     arquivosTamanho = arquivosTamanho+i+' --- '+str(j)+'\n'
-mensagensLog = []
+
 try:
     while True:
         # Recebendo os dados do cliente
         mensagem, ip_cliente = udp_socket.recvfrom(BUFFER_SIZE)
         # Convertendo a mensagem recebida de bytes para string
         mensagem = mensagem.decode(CODE_PAGE)
-        # Imprimindo a mensagem recebida 
         
+        #Salvando na lista a Mensagem recebida 
         mensagensLog.append([datetime.today().strftime('%Y-%m-%d %H:%M'),ip_cliente[0], mensagem,]) 
         
+        #Mandando Ajuda 
         if mensagem.upper() == '\\H': 
             print(f'\nMandando Ajuda Para {ip_cliente} ...\n')
             mensagem_volta = '\n --Listas de Comando-- \n \\f -- Listar Arquivos \n \\d:nome_arquivo -- Efetua o Download do Arquivo \n \\u:nome_arquivo -- Efetua o Upload do Arquivo \n \\q -- Sair do Cliente \n'                
@@ -44,13 +46,12 @@ try:
         # Mensagem de desconexão 
         elif mensagem.upper() == '\\Q':
             print(f'\nO {ip_cliente} SE DESCONECTOU DO SERVIDOR...\n')
-        
+        # Mandando lista de Mensagens para o Cliente 
         elif mensagem.upper() == '\\M':            
             print(f'\nO {ip_cliente} Enviando Lista de Mensagens...\n')
             mensagem_volta = '\n'
             for i in mensagensLog:
-                mensagem_volta = mensagem_volta+i[0]+', '+i[1]+', '+i[2]+'\n'
-                        
+                mensagem_volta = mensagem_volta+i[0]+', '+i[1]+', '+i[2]+'\n'                        
             udp_socket.sendto(mensagem_volta.encode(CODE_PAGE), ip_cliente)
             
         # Mandando lista de Arquivos  
